@@ -1,0 +1,6 @@
+# Build artifacts (zip is regenerated from source)
+dist/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
