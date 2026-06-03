@@ -169,7 +169,7 @@ function listSection(title, markets) {
 
 function emptyForMatch(match) {
   return stateBox(
-    `No Hotaku market for <strong>${escapeHtml(match.title)}</strong> yet.`,
+    ['No Hotaku market for ', strongText(match.title), ' yet.'],
     'See open markets',
     'https://hotaku.fun/markets'
   );
@@ -177,7 +177,7 @@ function emptyForMatch(match) {
 
 function emptyForGame(match) {
   return stateBox(
-    `No open ${escapeHtml(GAME_LABEL[match.game] || match.game)} markets right now.`,
+    ['No open ', strongText(GAME_LABEL[match.game] || match.game), ' markets right now.'],
     'Browse all markets',
     'https://hotaku.fun/markets'
   );
@@ -186,7 +186,8 @@ function emptyForGame(match) {
 function renderUnsupported() {
   content.replaceChildren(
     stateBox(
-      'Open a match on <strong>HLTV</strong>, <strong>Liquipedia</strong>, <strong>Twitch</strong> or <strong>op.gg</strong> to see live Hotaku odds.',
+      ['Open a match on ', strongText('HLTV'), ', ', strongText('Liquipedia'), ', ',
+        strongText('Twitch'), ' or ', strongText('op.gg'), ' to see live Hotaku odds.'],
       'Explore markets',
       'https://hotaku.fun/markets'
     )
@@ -194,9 +195,11 @@ function renderUnsupported() {
 }
 
 function renderError(err) {
+  const detail = el('small');
+  detail.textContent = String(err.message || err);
   content.replaceChildren(
     stateBox(
-      `Couldn't reach the Hotaku API.<br /><small>${escapeHtml(String(err.message || err))}</small>`,
+      ["Couldn't reach the Hotaku API.", document.createElement('br'), detail],
       'Open Hotaku',
       'https://hotaku.fun'
     )
@@ -205,10 +208,13 @@ function renderError(err) {
 
 /* ---------- dom helpers ---------- */
 
-function stateBox(html, ctaText, ctaHref) {
+// parts: array of strings (text nodes) and/or DOM nodes appended to the message.
+function stateBox(parts, ctaText, ctaHref) {
   const box = el('div', 'state');
   const p = document.createElement('p');
-  p.innerHTML = html; // controlled strings; dynamic parts pass through escapeHtml
+  for (const part of parts) {
+    p.append(typeof part === 'string' ? document.createTextNode(part) : part);
+  }
   box.append(p);
   if (ctaText) {
     const a = el('a', 'cta');
@@ -233,14 +239,14 @@ function span(text) {
   return s;
 }
 
+function strongText(text) {
+  const s = document.createElement('strong');
+  s.textContent = text;
+  return s;
+}
+
 function fmtNum(n) {
   const v = Number(n) || 0;
   if (v >= 1000) return `${(v / 1000).toFixed(1)}k`;
   return v.toFixed(0);
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
-  ));
 }

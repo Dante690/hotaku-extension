@@ -20,7 +20,16 @@
   },
   "background": {
     "service_worker": "src/background/service-worker.js",
-    "type": "module"
+    "scripts": ["src/background/service-worker.js"]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "hotaku-odds@hotaku.fun",
+      "strict_min_version": "115.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
   },
   "permissions": ["activeTab"],
   "host_permissions": ["https://api.hotaku.fun/*"],
